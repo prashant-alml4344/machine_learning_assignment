@@ -7,12 +7,12 @@ M.Tech Machine Learning Assignment 2
 Dataset: Stellar Classification SDSS17 (NASA/SDSS)
 
 This Streamlit app provides:
-1. Dataset upload option (CSV) - 1 mark
-2. Model selection dropdown - 1 mark  
-3. Display of evaluation metrics - 1 mark
-4. Confusion matrix visualization - 1 mark
+1. Dataset upload option (CSV) 
+2. Model selection dropdown
+3. Display of evaluation metrics 
+4. Confusion matrix visualization 
 
-Author: [Your Name]
+Author: Prashant Sharma
 ================================================================================
 """
 
@@ -35,7 +35,13 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
+
+# XGBoost - optional import (can cause deployment issues)
+try:
+    from xgboost import XGBClassifier
+    XGBOOST_AVAILABLE = True
+except ImportError:
+    XGBOOST_AVAILABLE = False
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -96,18 +102,23 @@ with st.sidebar:
     
     # Model Selection Dropdown (Required - 1 mark)
     st.subheader("Select ML Model")
+    
+    # Build model list - include XGBoost only if available
+    model_options = [
+        "Logistic Regression",
+        "Decision Tree",
+        "K-Nearest Neighbors (KNN)",
+        "Naive Bayes (Gaussian)",
+        "Random Forest (Ensemble)",
+    ]
+    if XGBOOST_AVAILABLE:
+        model_options.append("XGBoost (Ensemble)")
+    
     model_choice = st.selectbox(
         "Choose a classification model:",
-        [
-            "Logistic Regression",
-            "Decision Tree",
-            "K-Nearest Neighbors (KNN)",
-            "Naive Bayes (Gaussian)",
-            "Random Forest (Ensemble)",
-            "XGBoost (Ensemble)"
-        ],
+        model_options,
         index=4,  # Default to Random Forest
-        help="Select one of the 6 implemented classification models"
+        help="Select one of the implemented classification models"
     )
     
     st.markdown("---")
@@ -132,9 +143,11 @@ with st.sidebar:
         "K-Nearest Neighbors (KNN)": "Instance-based learning using distance metrics. Requires scaled features.",
         "Naive Bayes (Gaussian)": "Probabilistic classifier assuming feature independence. Very fast.",
         "Random Forest (Ensemble)": "Ensemble of decision trees with bagging. Best overall performance.",
-        "XGBoost (Ensemble)": "Gradient boosting ensemble. Excellent for tabular data."
     }
-    st.info(model_info[model_choice])
+    if XGBOOST_AVAILABLE:
+        model_info["XGBoost (Ensemble)"] = "Gradient boosting ensemble. Excellent for tabular data."
+    
+    st.info(model_info.get(model_choice, "Model information not available."))
 
 
 # ============================================================================
@@ -269,12 +282,16 @@ def get_model(model_name):
             n_estimators=100, max_depth=15, min_samples_split=10,
             class_weight='balanced', random_state=42, n_jobs=-1
         ),
-        "XGBoost (Ensemble)": XGBClassifier(
+    }
+    
+    # Add XGBoost only if available
+    if XGBOOST_AVAILABLE:
+        models["XGBoost (Ensemble)"] = XGBClassifier(
             n_estimators=100, max_depth=6, learning_rate=0.1,
             objective='multi:softprob', random_state=42, n_jobs=-1,
             use_label_encoder=False, eval_metric='mlogloss'
         )
-    }
+    
     return models[model_name]
 
 
