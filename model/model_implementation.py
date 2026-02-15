@@ -28,7 +28,7 @@ LEARNING OBJECTIVES:
 - Understand class imbalance handling
 - Learn hyperparameter selection reasoning
 
-Author: [Your Name]
+Author: Prashant Sharma
 Assignment: M.Tech ML Assignment 2
 Dataset: Stellar Classification SDSS17
 ================================================================================
