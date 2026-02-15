@@ -35,13 +35,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
-
-# XGBoost - optional import (can cause deployment issues)
-try:
-    from xgboost import XGBClassifier
-    XGBOOST_AVAILABLE = True
-except ImportError:
-    XGBOOST_AVAILABLE = False
+from xgboost import XGBClassifier
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -103,22 +97,18 @@ with st.sidebar:
     # Model Selection Dropdown (Required - 1 mark)
     st.subheader("Select ML Model")
     
-    # Build model list - include XGBoost only if available
-    model_options = [
-        "Logistic Regression",
-        "Decision Tree",
-        "K-Nearest Neighbors (KNN)",
-        "Naive Bayes (Gaussian)",
-        "Random Forest (Ensemble)",
-    ]
-    if XGBOOST_AVAILABLE:
-        model_options.append("XGBoost (Ensemble)")
-    
     model_choice = st.selectbox(
         "Choose a classification model:",
-        model_options,
+        [
+            "Logistic Regression",
+            "Decision Tree",
+            "K-Nearest Neighbors (KNN)",
+            "Naive Bayes (Gaussian)",
+            "Random Forest (Ensemble)",
+            "XGBoost (Ensemble)"
+        ],
         index=4,  # Default to Random Forest
-        help="Select one of the implemented classification models"
+        help="Select one of the 6 implemented classification models"
     )
     
     st.markdown("---")
@@ -143,11 +133,9 @@ with st.sidebar:
         "K-Nearest Neighbors (KNN)": "Instance-based learning using distance metrics. Requires scaled features.",
         "Naive Bayes (Gaussian)": "Probabilistic classifier assuming feature independence. Very fast.",
         "Random Forest (Ensemble)": "Ensemble of decision trees with bagging. Best overall performance.",
+        "XGBoost (Ensemble)": "Gradient boosting ensemble. Excellent for tabular data."
     }
-    if XGBOOST_AVAILABLE:
-        model_info["XGBoost (Ensemble)"] = "Gradient boosting ensemble. Excellent for tabular data."
-    
-    st.info(model_info.get(model_choice, "Model information not available."))
+    st.info(model_info[model_choice])
 
 
 # ============================================================================
@@ -282,16 +270,12 @@ def get_model(model_name):
             n_estimators=100, max_depth=15, min_samples_split=10,
             class_weight='balanced', random_state=42, n_jobs=-1
         ),
-    }
-    
-    # Add XGBoost only if available
-    if XGBOOST_AVAILABLE:
-        models["XGBoost (Ensemble)"] = XGBClassifier(
+        "XGBoost (Ensemble)": XGBClassifier(
             n_estimators=100, max_depth=6, learning_rate=0.1,
             objective='multi:softprob', random_state=42, n_jobs=-1,
             use_label_encoder=False, eval_metric='mlogloss'
         )
-    
+    }
     return models[model_name]
 
 
@@ -352,6 +336,52 @@ with tab1:
         )
         
         use_default = st.checkbox("Use default dataset (10,000 samples)", value=True)
+        
+        # Download Test Data Button
+        st.markdown("---")
+        st.subheader("📥 Download Sample Test Data")
+        st.markdown("Don't have test data? Download our sample file to test the app:")
+        
+        # Create sample test data for download
+        sample_data = """alpha,delta,u,g,r,i,z,redshift,class
+135.689,32.495,19.47,17.04,16.11,15.69,15.40,0.0001,STAR
+247.352,19.872,21.12,19.54,18.76,18.34,18.03,0.0823,GALAXY
+183.295,46.128,19.82,19.21,18.95,18.73,18.52,1.2847,QSO
+72.456,28.934,18.23,16.89,16.21,15.87,15.61,0.0002,STAR
+312.784,55.219,20.89,19.32,18.54,18.12,17.81,0.1245,GALAXY
+156.923,41.567,19.65,19.08,18.81,18.59,18.38,1.8934,QSO
+89.134,12.456,17.95,16.52,15.89,15.52,15.28,0.0001,STAR
+278.456,38.912,21.45,19.87,19.08,18.65,18.33,0.0956,GALAXY
+201.567,52.348,19.91,19.35,19.12,18.91,18.72,2.3456,QSO
+45.678,25.789,18.56,17.12,16.45,16.08,15.81,0.0003,STAR
+334.123,48.567,20.67,19.12,18.35,17.94,17.63,0.0734,GALAXY
+167.234,35.891,19.73,19.15,18.89,18.67,18.47,1.5623,QSO
+112.456,8.234,18.12,16.78,16.12,15.76,15.49,0.0002,STAR
+289.567,62.134,21.23,19.65,18.87,18.45,18.14,0.1567,GALAXY
+178.345,44.678,19.88,19.29,19.03,18.82,18.62,1.9234,QSO
+67.891,31.456,17.78,16.35,15.72,15.38,15.12,0.0001,STAR
+256.789,21.345,20.45,18.92,18.15,17.74,17.43,0.0645,GALAXY
+145.678,39.234,19.56,18.98,18.72,18.51,18.31,1.1234,QSO
+98.234,15.678,18.34,16.91,16.25,15.89,15.62,0.0002,STAR
+301.456,57.891,21.67,20.08,19.28,18.85,18.53,0.1823,GALAXY
+189.567,47.123,19.79,19.22,18.97,18.76,18.56,2.1567,QSO
+34.567,22.891,17.65,16.23,15.61,15.27,15.01,0.0001,STAR
+267.891,34.567,20.23,18.71,17.95,17.54,17.24,0.0512,GALAXY
+156.234,42.567,19.67,19.11,18.86,18.65,18.45,1.4567,QSO
+78.912,9.345,18.01,16.58,15.93,15.57,15.31,0.0002,STAR
+323.456,51.234,21.89,20.31,19.51,19.08,18.76,0.2134,GALAXY
+198.678,49.891,19.94,19.37,19.11,18.89,18.69,2.5678,QSO
+56.234,27.123,17.89,16.47,15.84,15.49,15.23,0.0001,STAR
+245.123,17.456,20.98,19.42,18.65,18.23,17.92,0.0889,GALAXY
+134.567,36.789,19.52,18.95,18.69,18.48,18.28,1.0234,QSO"""
+        
+        st.download_button(
+            label="⬇️ Download Test Data (CSV)",
+            data=sample_data,
+            file_name="test_data.csv",
+            mime="text/csv",
+            help="Download a sample CSV file with 30 stellar objects to test the classification models"
+        )
     
     with col2:
         st.subheader("Required Columns")
