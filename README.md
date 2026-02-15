@@ -1,6 +1,6 @@
 # 🌟 Stellar Classification using Machine Learning
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](YOUR_STREAMLIT_APP_LINK_HERE)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://machinelearningassignment-6fd5mbn7vmoartn5uvyqya.streamlit.app/)
 
 M.Tech Machine Learning Assignment 2 | BITS Pilani (WILP)
 
@@ -41,27 +41,29 @@ The objective is to implement 6 different machine learning classification models
 | Property | Value |
 |----------|-------|
 | Total Samples | 100,000 |
-| Number of Features | 17 (8 used after preprocessing) |
+| Number of Features | 17 (12 used for classification) |
 | Number of Classes | 3 (GALAXY, STAR, QSO) |
 | Class Distribution | GALAXY: 59.45%, STAR: 21.59%, QSO: 18.96% |
 
-### Features Used for Classification
+### Features Used for Classification (12 Features)
 
-| Feature | Description | Type |
-|---------|-------------|------|
-| `alpha` | Right Ascension angle (J2000 epoch) | Continuous (0-360°) |
-| `delta` | Declination angle (J2000 epoch) | Continuous (-90 to +90°) |
-| `u` | Ultraviolet filter magnitude | Continuous |
-| `g` | Green filter magnitude | Continuous |
-| `r` | Red filter magnitude | Continuous |
-| `i` | Near-Infrared filter magnitude | Continuous |
-| `z` | Infrared filter magnitude | Continuous |
-| `redshift` | Redshift value based on wavelength increase | Continuous |
+| # | Feature | Description | Type |
+|---|---------|-------------|------|
+| 1 | `alpha` | Right Ascension angle (J2000 epoch) | Continuous (0-360°) |
+| 2 | `delta` | Declination angle (J2000 epoch) | Continuous (-90 to +90°) |
+| 3 | `u` | Ultraviolet filter magnitude | Continuous |
+| 4 | `g` | Green filter magnitude | Continuous |
+| 5 | `r` | Red filter magnitude | Continuous |
+| 6 | `i` | Near-Infrared filter magnitude | Continuous |
+| 7 | `z` | Infrared filter magnitude | Continuous |
+| 8 | `redshift` | Redshift value based on wavelength increase | Continuous |
+| 9 | `plate` | Plate ID in SDSS spectroscopic survey | Integer |
+| 10 | `MJD` | Modified Julian Date of observation | Integer |
+| 11 | `field_ID` | Field number to identify scan | Integer |
+| 12 | `cam_col` | Camera column to identify scanline | Integer (1-6) |
 
-### Features Dropped (Identifiers/Metadata)
-- `obj_ID`, `run_ID`, `rerun_ID`, `cam_col`, `field_ID`, `spec_obj_ID`, `plate`, `MJD`, `fiber_ID`
-
-These columns are database identifiers and technical metadata, not scientific measurements useful for classification.
+### Features Dropped (Identifiers Only)
+- `obj_ID`, `run_ID`, `rerun_ID`, `spec_obj_ID`, `fiber_ID` - Pure database identifiers that would cause data leakage
 
 ### Key Insight
 **Redshift** is the most important feature for stellar classification:
@@ -115,15 +117,15 @@ Six classification models were implemented as required:
 ## Installation & Usage
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.11+
 - pip package manager
 
 ### Local Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/prashant-alml4344/machine_learning_assignment.git
+cd machine_learning_assignment
 
 # Install dependencies
 pip install -r requirements.txt
@@ -135,20 +137,23 @@ streamlit run app.py
 ### Using the Application
 
 1. **Upload Data**: Upload your own CSV file or use the default dataset
-2. **Select Model**: Choose from 6 available classification models
-3. **Train**: Click "Train Model" to train the selected model
-4. **View Results**: Check accuracy, metrics, and confusion matrix in the Results tab
+2. **Download Test Data**: Click the download button to get sample test data
+3. **Select Model**: Choose from 6 available classification models
+4. **Train**: Click "Train Model" to train the selected model
+5. **View Results**: Check accuracy, metrics, and confusion matrix in the Results tab
 
 ---
 
 ## Project Structure
 
 ```
-stellar-classification/
+machine_learning_assignment/
 │
 ├── app.py                      # Main Streamlit application
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # Project documentation
+├── .python-version             # Python version (3.11)
+├── test_data.csv               # Sample test data for quick testing
 │
 └── model/                      # Model training scripts
     ├── 01_dataset_understanding.py    # EDA and preprocessing
@@ -169,13 +174,14 @@ stellar-classification/
 5. Select repository and `app.py`
 6. Click "Deploy"
 
-**Live App Link:** [YOUR_STREAMLIT_APP_LINK_HERE]
+**Live App Link:** [https://machinelearningassignment-6fd5mbn7vmoartn5uvyqya.streamlit.app/](https://machinelearningassignment-6fd5mbn7vmoartn5uvyqya.streamlit.app/)
 
 ---
 
 ## Streamlit App Features
 
 - ✅ **Dataset upload option (CSV)** - Upload custom test data
+- ✅ **Download test data** - Quick download button for sample data
 - ✅ **Model selection dropdown** - Choose from 6 classification models
 - ✅ **Display of evaluation metrics** - All 6 metrics shown
 - ✅ **Confusion matrix visualization** - Interactive heatmap display
@@ -188,12 +194,6 @@ stellar-classification/
 
 2. **Data Source:** Abdurro'uf et al., The Seventeenth data release of the Sloan Digital Sky Surveys: Complete Release of MaNGA, MaStar and APOGEE-2 DATA
 
-3. **SDSS:** [Sloan Digital Sky Survey](https://www.sdss.org/)
 
-4. **Scikit-learn:** [Documentation](https://scikit-learn.org/stable/)
-
-5. **XGBoost:** [Documentation](https://xgboost.readthedocs.io/)
-
-6. **Streamlit:** [Documentation](https://docs.streamlit.io/)
 
 ---
