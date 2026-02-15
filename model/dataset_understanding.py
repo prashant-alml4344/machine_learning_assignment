@@ -318,12 +318,8 @@ def preprocess_data(df):
     columns_to_drop = [
         'obj_ID',      # Object ID - just a database identifier
         'run_ID',      # Run number - technical metadata
-        'rerun_ID',    # Rerun number - technical metadata
-        'cam_col',     # Camera column - technical metadata
-        'field_ID',    # Field number - technical metadata
-        'spec_obj_ID', # Spectroscopic object ID - database identifier
-        'plate',       # Plate ID - technical metadata
-        'MJD',         # Modified Julian Date - timestamp, not feature
+        'rerun_ID',    # Rerun number - technical metadata        
+        'spec_obj_ID', # Spectroscopic object ID - database identifier       
         'fiber_ID'     # Fiber ID - technical metadata
     ]
     
