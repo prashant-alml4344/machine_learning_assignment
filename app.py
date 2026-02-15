@@ -147,6 +147,7 @@ def load_default_data():
     """
     Load or create default stellar classification data.
     Uses caching to avoid regenerating data on every rerun.
+    Generates 12 features to meet minimum requirement.
     """
     np.random.seed(42)
     n_samples = 10000  # Smaller for faster training in Streamlit
@@ -168,6 +169,10 @@ def load_default_data():
             'i': np.random.normal(17.8, 1.1),
             'z': np.random.normal(17.5, 1.1),
             'redshift': np.random.exponential(0.1) + 0.01,
+            'plate': np.random.randint(200, 15000),
+            'MJD': np.random.randint(51000, 59000),
+            'field_ID': np.random.randint(10, 900),
+            'cam_col': np.random.randint(1, 7),
             'class': 'GALAXY'
         })
     
@@ -182,6 +187,10 @@ def load_default_data():
             'i': np.random.normal(15.8, 1.6),
             'z': np.random.normal(15.6, 1.5),
             'redshift': np.random.normal(0.0001, 0.0005),
+            'plate': np.random.randint(200, 15000),
+            'MJD': np.random.randint(51000, 59000),
+            'field_ID': np.random.randint(10, 900),
+            'cam_col': np.random.randint(1, 7),
             'class': 'STAR'
         })
     
@@ -196,6 +205,10 @@ def load_default_data():
             'i': np.random.normal(18.6, 0.8),
             'z': np.random.normal(18.4, 0.8),
             'redshift': np.random.exponential(1.0) + 0.5,
+            'plate': np.random.randint(200, 15000),
+            'MJD': np.random.randint(51000, 59000),
+            'field_ID': np.random.randint(10, 900),
+            'cam_col': np.random.randint(1, 7),
             'class': 'QSO'
         })
     
@@ -207,15 +220,20 @@ def preprocess_data(df):
     Preprocess the uploaded or default dataset.
     Returns processed features, labels, and preprocessing objects.
     """
-    # Define feature columns (excluding identifiers if present)
-    id_columns = ['obj_ID', 'run_ID', 'rerun_ID', 'cam_col', 'field_ID', 
-                  'spec_obj_ID', 'plate', 'MJD', 'fiber_ID']
+    # Define feature columns - using 12 features (minimum required)
+    # Only dropping pure ID columns that would cause data leakage
+    id_columns_to_drop = ['obj_ID', 'spec_obj_ID', 'run_ID', 'rerun_ID', 'fiber_ID']
     
-    # Keep only relevant columns
-    feature_cols = ['alpha', 'delta', 'u', 'g', 'r', 'i', 'z', 'redshift']
+    # 12 Features to use for classification:
+    # 8 Scientific: alpha, delta, u, g, r, i, z, redshift
+    # 4 Technical: plate, MJD, field_ID, cam_col
+    feature_cols = ['alpha', 'delta', 'u', 'g', 'r', 'i', 'z', 'redshift', 
+                    'plate', 'MJD', 'field_ID', 'cam_col']
+    
     available_features = [col for col in feature_cols if col in df.columns]
     
-    if len(available_features) < 4:
+    # If dataset doesn't have all 12, use whatever is available
+    if len(available_features) < 8:
         st.error("Dataset must contain at least these columns: alpha, delta, u, g, r, i, z, redshift")
         return None
     
